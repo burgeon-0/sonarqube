@@ -27,9 +27,11 @@ import org.sonar.db.DatabaseUtils;
 import org.sonar.server.platform.db.migration.sql.CreateIndexBuilder;
 import org.sonar.server.platform.db.migration.step.DdlChange;
 
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVarcharColumnDefBuilder;
 import static org.sonar.server.platform.db.migration.version.v101.CreateExternalGroupsTable.EXTERNAL_GROUP_ID_COLUMN_NAME;
 import static org.sonar.server.platform.db.migration.version.v101.CreateExternalGroupsTable.EXTERNAL_IDENTITY_PROVIDER_COLUMN_NAME;
 import static org.sonar.server.platform.db.migration.version.v101.CreateExternalGroupsTable.TABLE_NAME;
+import static org.sonar.server.platform.db.migration.version.v101.CreateScmAccountsTable.SCM_ACCOUNT_COLUMN_NAME;
 
 public class CreateIndexOnExternalIdAndIdentityOnExternalGroupsTable extends DdlChange {
 
@@ -47,13 +49,13 @@ public class CreateIndexOnExternalIdAndIdentityOnExternalGroupsTable extends Ddl
     }
   }
 
-  private static void createIndex(Context context, Connection connection) {
+  private void createIndex(Context context, Connection connection) {
     if (!DatabaseUtils.indexExistsIgnoreCase(TABLE_NAME, INDEX_NAME, connection)) {
-      context.execute(new CreateIndexBuilder()
+      context.execute(new CreateIndexBuilder(getDialect())
         .setTable(TABLE_NAME)
         .setName(INDEX_NAME)
-        .addColumn(EXTERNAL_IDENTITY_PROVIDER_COLUMN_NAME)
-        .addColumn(EXTERNAL_GROUP_ID_COLUMN_NAME)
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(EXTERNAL_IDENTITY_PROVIDER_COLUMN_NAME).setLimit(255).build())
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(EXTERNAL_GROUP_ID_COLUMN_NAME).setLimit(255).build())
         .setUnique(true)
         .build());
     }

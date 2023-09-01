@@ -201,7 +201,7 @@
       live_measures.measure_data is distinct from excluded.measure_data
   </update>
 
-  <delete id="deleteByComponentUuidExcludingMetricUuids" parameterType="map">
+  <delete id="deleteByComponentUuidExcludingMetricUuids" parameterType="map" databaseId="mysql">
     <include refid="sql_deleteByComponentUuidExcludingMetricUuids"/>
   </delete>
 

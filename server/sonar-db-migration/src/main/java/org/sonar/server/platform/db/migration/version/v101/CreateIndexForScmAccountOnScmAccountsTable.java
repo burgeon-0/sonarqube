@@ -27,6 +27,7 @@ import org.sonar.db.DatabaseUtils;
 import org.sonar.server.platform.db.migration.sql.CreateIndexBuilder;
 import org.sonar.server.platform.db.migration.step.DdlChange;
 
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVarcharColumnDefBuilder;
 import static org.sonar.server.platform.db.migration.version.v101.CreateScmAccountsTable.SCM_ACCOUNT_COLUMN_NAME;
 import static org.sonar.server.platform.db.migration.version.v101.CreateScmAccountsTable.SCM_ACCOUNTS_TABLE_NAME;
 
@@ -46,12 +47,12 @@ class CreateIndexForScmAccountOnScmAccountsTable extends DdlChange {
     }
   }
 
-  private static void createIndex(Context context, Connection connection) {
+  private void createIndex(Context context, Connection connection) {
     if (!DatabaseUtils.indexExistsIgnoreCase(SCM_ACCOUNTS_TABLE_NAME, INDEX_NAME, connection)) {
-      context.execute(new CreateIndexBuilder()
+      context.execute(new CreateIndexBuilder(getDialect())
         .setTable(SCM_ACCOUNTS_TABLE_NAME)
         .setName(INDEX_NAME)
-        .addColumn(SCM_ACCOUNT_COLUMN_NAME)
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(SCM_ACCOUNT_COLUMN_NAME).setLimit(255).build())
         .setUnique(false)
         .build());
     }

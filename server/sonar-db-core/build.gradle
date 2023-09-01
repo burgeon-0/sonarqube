@@ -26,6 +26,7 @@ dependencies {
   testImplementation 'com.microsoft.sqlserver:mssql-jdbc'
   testImplementation 'com.oracle.database.jdbc:ojdbc11'
   testImplementation 'com.tngtech.java:junit-dataprovider'
+  testImplementation 'mysql:mysql-connector-java'
   testImplementation 'org.mockito:mockito-core'
   testImplementation 'org.postgresql:postgresql'
   testImplementation 'org.sonarsource.api.plugin:sonar-plugin-api-test-fixtures'
@@ -35,6 +36,7 @@ dependencies {
   testRuntimeOnly 'com.h2database:h2'
   testRuntimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
   testRuntimeOnly 'com.oracle.database.jdbc:ojdbc11'
+  testRuntimeOnly 'mysql:mysql-connector-java'
   testRuntimeOnly 'org.postgresql:postgresql'
 
   testFixturesApi 'commons-dbutils:commons-dbutils'

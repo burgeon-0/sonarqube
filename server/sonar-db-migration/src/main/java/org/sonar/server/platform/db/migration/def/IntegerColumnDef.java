@@ -22,11 +22,8 @@ package org.sonar.server.platform.db.migration.def;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -44,7 +41,7 @@ public class IntegerColumnDef extends AbstractColumnDef {
   @Override
   public String generateSqlType(Dialect dialect) {
     return switch (dialect.getId()) {
-      case PostgreSql.ID, H2.ID -> "INTEGER";
+      case PostgreSql.ID, MySql.ID, H2.ID -> "INTEGER";
       case MsSql.ID -> "INT";
       case Oracle.ID -> "NUMBER(38,0)";
       default -> throw new IllegalArgumentException("Unsupported dialect id " + dialect.getId());

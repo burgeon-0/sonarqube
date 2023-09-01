@@ -22,11 +22,8 @@ package org.sonar.server.platform.db.migration.sql;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.CheckForNull;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 import org.sonar.server.platform.db.migration.def.ColumnDef;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -74,6 +71,8 @@ public class RenameColumnsBuilder {
             return "ALTER TABLE " + tableName + " ALTER COLUMN " + r.getOldColumnName() + " RENAME TO " + r.getNewColumnName();
           case Oracle.ID, PostgreSql.ID:
             return "ALTER TABLE " + tableName + " RENAME COLUMN " + r.getOldColumnName() + " TO " + r.getNewColumnName();
+          case MySql.ID:
+            return "ALTER TABLE " + tableName + " CHANGE " + r.getOldColumnName() + " " + r.getNewColumnName() + " " + r.generateSqlType(dialect);
           case MsSql.ID:
             return "EXEC sp_rename '" + tableName + "." + r.getOldColumnName() + "', '" + r.getNewColumnName() + "', 'COLUMN'";
           default:

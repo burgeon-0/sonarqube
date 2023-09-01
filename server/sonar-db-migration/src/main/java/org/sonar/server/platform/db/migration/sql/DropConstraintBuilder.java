@@ -20,11 +20,8 @@
 package org.sonar.server.platform.db.migration.sql;
 
 import java.util.List;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static java.util.Collections.singletonList;
 import static org.sonar.server.platform.db.migration.def.Validations.validateIndexName;
@@ -66,7 +63,7 @@ public class DropConstraintBuilder {
 
   private String createSqlStatement() {
     return switch (dialect.getId()) {
-      case MsSql.ID, Oracle.ID, PostgreSql.ID, H2.ID -> "ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName;
+      case MsSql.ID, MySql.ID, Oracle.ID, PostgreSql.ID, H2.ID -> "ALTER TABLE " + tableName + " DROP CONSTRAINT " + constraintName;
       default -> throw new IllegalStateException("Unsupported dialect for drop of constraint: " + dialect);
     };
   }

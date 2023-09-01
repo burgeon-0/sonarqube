@@ -37,6 +37,7 @@ dependencies {
   testRuntimeOnly 'com.h2database:h2'
   testRuntimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
   testRuntimeOnly 'com.oracle.database.jdbc:ojdbc11'
+  testRuntimeOnly 'mysql:mysql-connector-java'
   testRuntimeOnly 'org.postgresql:postgresql'
 
   testFixturesApi testFixtures(project(':server:sonar-db-core'))

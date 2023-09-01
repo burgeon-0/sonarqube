@@ -26,11 +26,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Optional;
 import org.sonar.db.Database;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+import org.sonar.db.dialect.*;
 
 import static java.lang.String.format;
 
@@ -60,8 +56,8 @@ public class DbPrimaryKeyConstraintFinder {
       case Oracle.ID:
         constraintQuery = getOracleConstraintQuery(tableName);
         break;
-      case H2.ID:
-        constraintQuery = getH2ConstraintQuery(tableName);
+      case MySql.ID, H2.ID:
+        constraintQuery = getConstraintQuery(tableName);
         break;
       default:
         throw new IllegalStateException(format("Unsupported database '%s'", dialect.getId()));
@@ -107,7 +103,7 @@ public class DbPrimaryKeyConstraintFinder {
       "AND constraint_type='P'", tableName);
   }
 
-  private static String getH2ConstraintQuery(String tableName) {
+  private static String getConstraintQuery(String tableName) {
     return format("SELECT constraint_name "
       + "FROM information_schema.table_constraints "
       + "WHERE table_name = '%s' and constraint_type = 'PRIMARY KEY'", tableName.toUpperCase(Locale.ENGLISH));

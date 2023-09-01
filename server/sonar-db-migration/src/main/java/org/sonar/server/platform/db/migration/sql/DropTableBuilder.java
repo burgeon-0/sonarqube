@@ -20,11 +20,8 @@
 package org.sonar.server.platform.db.migration.sql;
 
 import java.util.List;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -44,7 +41,7 @@ public class DropTableBuilder {
   public List<String> build() {
     return switch (dialect.getId()) {
       case Oracle.ID -> forOracle(tableName);
-      case H2.ID, PostgreSql.ID -> singletonList("drop table if exists " + tableName);
+      case H2.ID, MySql.ID, PostgreSql.ID -> singletonList("drop table if exists " + tableName);
       case MsSql.ID ->
         // "if exists" is supported only since MSSQL 2016.
         singletonList("drop table " + tableName);

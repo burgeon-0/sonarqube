@@ -21,11 +21,8 @@ package org.sonar.server.platform.db.migration.def;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -39,6 +36,7 @@ public class BlobColumnDef extends AbstractColumnDef {
   public String generateSqlType(Dialect dialect) {
     return switch (dialect.getId()) {
       case MsSql.ID -> "VARBINARY(MAX)";
+      case MySql.ID -> "LONGBLOB";
       case Oracle.ID, H2.ID -> "BLOB";
       case PostgreSql.ID -> "BYTEA";
       default -> throw new IllegalArgumentException("Unsupported dialect id " + dialect.getId());

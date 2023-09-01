@@ -20,11 +20,8 @@
 package org.sonar.server.platform.db.migration.def;
 
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -47,6 +44,8 @@ public class ClobColumnDef extends AbstractColumnDef {
     switch (dialect.getId()) {
       case MsSql.ID:
         return "NVARCHAR (MAX)";
+      case MySql.ID:
+        return "LONGTEXT";
       case Oracle.ID, H2.ID:
         return "CLOB";
       case PostgreSql.ID:

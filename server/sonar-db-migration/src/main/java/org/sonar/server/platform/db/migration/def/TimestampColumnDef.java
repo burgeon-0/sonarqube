@@ -20,11 +20,8 @@
 package org.sonar.server.platform.db.migration.def;
 
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -49,7 +46,7 @@ public class TimestampColumnDef extends AbstractColumnDef {
   @Override
   public String generateSqlType(Dialect dialect) {
     return switch (dialect.getId()) {
-      case MsSql.ID -> "DATETIME";
+      case MsSql.ID, MySql.ID -> "DATETIME";
       case Oracle.ID -> "TIMESTAMP (6)";
       case H2.ID, PostgreSql.ID -> "TIMESTAMP";
       default -> throw new IllegalArgumentException("Unsupported dialect id " + dialect.getId());

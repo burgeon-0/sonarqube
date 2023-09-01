@@ -26,11 +26,7 @@ import javax.annotation.CheckForNull;
 import javax.inject.Inject;
 
 import org.sonar.db.Database;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+import org.sonar.db.dialect.*;
 
 /**
  * On fresh installations, checks that all db columns are UTF8. On MSSQL,
@@ -81,6 +77,8 @@ public class DatabaseCharsetChecker {
         return new OracleCharsetHandler(sqlExecutor);
       case PostgreSql.ID:
         return new PostgresCharsetHandler(sqlExecutor, new PostgresMetadataReader(sqlExecutor));
+      case MySql.ID:
+        return new MysqlCharsetHandler(sqlExecutor);
       case MsSql.ID:
         return new MssqlCharsetHandler(sqlExecutor, new MssqlMetadataReader(sqlExecutor));
       default:

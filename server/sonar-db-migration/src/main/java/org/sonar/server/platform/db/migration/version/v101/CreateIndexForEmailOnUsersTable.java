@@ -27,6 +27,9 @@ import org.sonar.db.DatabaseUtils;
 import org.sonar.server.platform.db.migration.sql.CreateIndexBuilder;
 import org.sonar.server.platform.db.migration.step.DdlChange;
 
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.UUID_SIZE;
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVarcharColumnDefBuilder;
+
 class CreateIndexForEmailOnUsersTable extends DdlChange {
 
   @VisibleForTesting
@@ -47,12 +50,12 @@ class CreateIndexForEmailOnUsersTable extends DdlChange {
     }
   }
 
-  private static void createIndex(Context context, Connection connection) {
+  private void createIndex(Context context, Connection connection) {
     if (!DatabaseUtils.indexExistsIgnoreCase(TABLE_NAME, INDEX_NAME, connection)) {
-      context.execute(new CreateIndexBuilder()
+      context.execute(new CreateIndexBuilder(getDialect())
         .setTable(TABLE_NAME)
         .setName(INDEX_NAME)
-        .addColumn(COLUMN_NAME)
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(COLUMN_NAME).setLimit(255).build())
         .setUnique(false)
         .build());
     }

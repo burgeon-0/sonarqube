@@ -21,6 +21,7 @@ package org.sonar.server.platform.db.migration.sql;
 
 import java.util.List;
 import org.junit.Test;
+import org.sonar.db.dialect.MySql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,7 +30,7 @@ import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVar
 public class CreateIndexBuilderTest {
   @Test
   public void create_index_on_single_column() {
-    verifySql(new CreateIndexBuilder()
+    verifySql(new CreateIndexBuilder(new MySql())
       .setTable("issues")
       .setName("issues_key")
       .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(10).build()),
@@ -38,7 +39,7 @@ public class CreateIndexBuilderTest {
 
   @Test
   public void create_unique_index_on_single_column() {
-    verifySql(new CreateIndexBuilder()
+    verifySql(new CreateIndexBuilder(new MySql())
       .setTable("issues")
       .setName("issues_key")
       .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(10).build())
@@ -48,7 +49,7 @@ public class CreateIndexBuilderTest {
 
   @Test
   public void create_index_on_multiple_columns() {
-    verifySql(new CreateIndexBuilder()
+    verifySql(new CreateIndexBuilder(new MySql())
       .setTable("rules")
       .setName("rules_key")
       .addColumn(newVarcharColumnDefBuilder().setColumnName("repository").setLimit(10).build())
@@ -58,7 +59,7 @@ public class CreateIndexBuilderTest {
 
   @Test
   public void create_unique_index_on_multiple_columns() {
-    verifySql(new CreateIndexBuilder()
+    verifySql(new CreateIndexBuilder(new MySql())
       .setTable("rules")
       .setName("rules_key")
       .addColumn(newVarcharColumnDefBuilder().setColumnName("repository").setLimit(10).build())
@@ -69,7 +70,7 @@ public class CreateIndexBuilderTest {
 
   @Test
   public void index_length_is_not_specified_on_big_varchar_columns() {
-    verifySql(new CreateIndexBuilder()
+    verifySql(new CreateIndexBuilder(new MySql())
       .setTable("issues")
       .setName("issues_key")
       .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(4000).build()),
@@ -79,7 +80,7 @@ public class CreateIndexBuilderTest {
   @Test
   public void throw_NPE_if_table_is_missing() {
     assertThatThrownBy(() -> {
-      new CreateIndexBuilder()
+      new CreateIndexBuilder(new MySql())
         .setName("issues_key")
         .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(10).build())
         .build();
@@ -91,7 +92,7 @@ public class CreateIndexBuilderTest {
   @Test
   public void throw_NPE_if_index_name_is_missing() {
     assertThatThrownBy(() -> {
-      new CreateIndexBuilder()
+      new CreateIndexBuilder(new MySql())
         .setTable("issues")
         .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(10).build())
         .build();
@@ -103,7 +104,7 @@ public class CreateIndexBuilderTest {
   @Test
   public void throw_IAE_if_columns_are_missing() {
     assertThatThrownBy(() -> {
-      new CreateIndexBuilder()
+      new CreateIndexBuilder(new MySql())
         .setTable("issues")
         .setName("issues_key")
         .build();
@@ -115,7 +116,7 @@ public class CreateIndexBuilderTest {
   @Test
   public void throw_IAE_if_table_name_is_not_valid() {
     assertThatThrownBy(() -> {
-      new CreateIndexBuilder()
+      new CreateIndexBuilder(new MySql())
         .setTable("(not valid)")
         .setName("issues_key")
         .addColumn(newVarcharColumnDefBuilder().setColumnName("kee").setLimit(10).build())
@@ -128,10 +129,10 @@ public class CreateIndexBuilderTest {
   @Test
   public void throw_NPE_when_adding_null_column() {
     assertThatThrownBy(() -> {
-      new CreateIndexBuilder()
+      new CreateIndexBuilder(new MySql())
         .setTable("issues")
         .setName("issues_key")
-        .addColumn((String) null)
+        .addColumn(null)
         .build();
     })
       .isInstanceOf(NullPointerException.class)

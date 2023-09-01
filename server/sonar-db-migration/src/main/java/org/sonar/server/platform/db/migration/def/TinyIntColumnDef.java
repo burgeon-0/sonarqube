@@ -21,11 +21,8 @@ package org.sonar.server.platform.db.migration.def;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -48,6 +45,8 @@ public class TinyIntColumnDef extends AbstractColumnDef {
     return switch (dialect.getId()) {
       case PostgreSql.ID -> "SMALLINT";
       case Oracle.ID -> "NUMBER(3)";
+      // do not use TINYINT(1) as it's considered as booleans by connector/J.
+      case MySql.ID -> "TINYINT(2)";
       case MsSql.ID, H2.ID -> "TINYINT";
       default -> throw new UnsupportedOperationException(String.format("Unknown dialect '%s'", dialect.getId()));
     };

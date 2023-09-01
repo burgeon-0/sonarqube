@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2023 SonarSource SA
+ * Copyright (C) 2009-2019 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,7 +21,11 @@ package org.sonar.server.platform.db.migration.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.sonar.db.dialect.Dialect;
+import org.sonar.db.dialect.MySql;
 import org.sonar.server.platform.db.migration.def.ColumnDef;
+import org.sonar.server.platform.db.migration.def.VarcharColumnDef;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.singletonList;
@@ -31,10 +35,17 @@ import static org.sonar.server.platform.db.migration.def.Validations.validateTab
 
 public class CreateIndexBuilder {
 
-  private final List<String> columns = new ArrayList<>();
+  private static final int MAX_LENGTH_ON_MYSQL = 255;
+
+  private final Dialect dialect;
+  private final List<ColumnDef> columns = new ArrayList<>();
   private String tableName;
   private String indexName;
   private boolean unique = false;
+
+  public CreateIndexBuilder(Dialect dialect) {
+    this.dialect = dialect;
+  }
 
   /**
    * Required name of table on which index is created
@@ -64,19 +75,10 @@ public class CreateIndexBuilder {
   /**
    * Add a column to the scope of index. Order of calls to this
    * method is important and is kept as-is when creating the index.
-   * The attribute used from {@link ColumnDef} is the name.
-   * Other attributes are ignored.
+   * The attributes used from {@link ColumnDef} are the name, the type
+   * and the length (in case of VARCHAR). Other attributes are ignored.
    */
   public CreateIndexBuilder addColumn(ColumnDef column) {
-    columns.add(requireNonNull(column, "Column cannot be null").getName());
-    return this;
-  }
-
-  /**
-   * Add a column to the scope of index. Order of calls to this
-   * method is important and is kept as-is when creating the index.
-   */
-  public CreateIndexBuilder addColumn(String column) {
     columns.add(requireNonNull(column, "Column cannot be null"));
     return this;
   }
@@ -98,8 +100,22 @@ public class CreateIndexBuilder {
     sql.append(" ON ");
     sql.append(tableName);
     sql.append(" (");
-    sql.append(String.join(", ", columns));
+    sql.append(columns.stream().map(this::columnSql).collect(Collectors.joining(", ")));
     sql.append(")");
     return sql.toString();
+  }
+
+  private String columnSql(ColumnDef column) {
+    String length = "";
+    // Index of varchar column is limited to 767 bytes on mysql (<= 255 UTF-8 characters)
+    // See http://jira.sonarsource.com/browse/SONAR-4137 and
+    // http://dev.mysql.com/doc/refman/5.6/en/innodb-restrictions.html
+    if (dialect.getId().equals(MySql.ID) && column instanceof VarcharColumnDef) {
+      VarcharColumnDef varcharColumn = (VarcharColumnDef) column;
+      if (varcharColumn.getColumnSize() > MAX_LENGTH_ON_MYSQL) {
+        length = "(" + MAX_LENGTH_ON_MYSQL + ")";
+      }
+    }
+    return column.getName() + length;
   }
 }

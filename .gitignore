@@ -69,4 +69,5 @@ scripts/patches/*license*.txt
 !scripts/patches/debug_ce.sh
 !scripts/patches/debug_web.sh
 !scripts/patches/postgres.sh
+!scripts/patches/mysql.sh
 gherkin-features/

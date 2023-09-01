@@ -23,6 +23,9 @@ configurations {
   jdbc_mssql {
     transitive = false
   }
+  jdbc_mysql {
+    transitive = false
+  }
   jdbc_postgresql {
     transitive = false
   }
@@ -36,7 +39,7 @@ configurations {
     extendsFrom bundledPlugin
     transitive = true
   }
-  appLicenses.extendsFrom(api, web, scanner, jdbc_mssql, jdbc_postgresql, jdbc_h2, bundledPlugin_deps)
+  appLicenses.extendsFrom(api, web, scanner, jdbc_mssql, jdbc_mysql, jdbc_postgresql, jdbc_h2, bundledPlugin_deps)
   cyclonedx
 }
 
@@ -72,6 +75,7 @@ dependencies {
 
     jdbc_h2 'com.h2database:h2'
     jdbc_mssql 'com.microsoft.sqlserver:mssql-jdbc'
+    jdbc_mysql 'mysql:mysql-connector-java'
     jdbc_postgresql 'org.postgresql:postgresql'
 
     def artifactoryUsername = System.env.'ARTIFACTORY_PRIVATE_USERNAME' ?: (project.hasProperty('artifactoryUsername') ? project.getProperty('artifactoryUsername') : '')
@@ -297,6 +301,9 @@ task zip(type: Zip, dependsOn: [configurations.compileClasspath]) {
   into("${archiveDir}/lib/jdbc/mssql/") {
     from configurations.jdbc_mssql
   }
+  into("${archiveDir}/lib/jdbc/mysql/") {
+    from configurations.jdbc_mysql
+  }
   into("${archiveDir}/lib/jdbc/postgresql/") {
     from configurations.jdbc_postgresql
   }
@@ -341,12 +348,12 @@ artifactoryPublish.skip = false
 
 def bomFile = layout.buildDirectory.file('reports/bom.json')
 cyclonedxBom {
-  includeConfigs = ["runtimeClasspath", "web", "shutdowner", "jdbc_mssql", "jdbc_postgresql", "jdbc_h2", "bundledPlugin_deps",
+  includeConfigs = ["runtimeClasspath", "web", "shutdowner", "jdbc_mssql", "jdbc_mysql", "jdbc_postgresql", "jdbc_h2", "bundledPlugin_deps",
                     "cyclonedx"]
   outputs.file bomFile
 }
 tasks.cyclonedxBom {
-  inputs.files(configurations.runtimeClasspath, configurations.shutdowner, configurations.jdbc_mssql,
+  inputs.files(configurations.runtimeClasspath, configurations.shutdowner, configurations.jdbc_mssql, configurations.jdbc_mysql,
           configurations.jdbc_postgresql, configurations.jdbc_h2, configurations.bundledPlugin_deps, configurations.cyclonedx)
 }
 def bomArtifact = artifacts.add('archives', bomFile.get().asFile) {

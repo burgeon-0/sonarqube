@@ -47,7 +47,7 @@ public class JdbcSettings implements Consumer<Props> {
   private static final int JDBC_EMBEDDED_PORT_DEFAULT_VALUE = 9092;
 
   enum Provider {
-    H2("lib/jdbc/h2"), SQLSERVER("lib/jdbc/mssql"), ORACLE("extensions/jdbc-driver/oracle"),
+    H2("lib/jdbc/h2"), SQLSERVER("lib/jdbc/mssql"), MYSQL("lib/jdbc/mysql"), ORACLE("extensions/jdbc-driver/oracle"),
     POSTGRESQL("lib/jdbc/postgresql");
 
     final String path;

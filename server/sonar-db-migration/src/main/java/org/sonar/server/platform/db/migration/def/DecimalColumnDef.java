@@ -21,11 +21,8 @@ package org.sonar.server.platform.db.migration.def;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.concurrent.Immutable;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static org.sonar.server.platform.db.migration.def.Validations.validateColumnName;
 
@@ -60,7 +57,7 @@ public class DecimalColumnDef extends AbstractColumnDef {
   public String generateSqlType(Dialect dialect) {
     return switch (dialect.getId()) {
       case PostgreSql.ID, Oracle.ID -> String.format("NUMERIC (%s,%s)", precision, scale);
-      case MsSql.ID -> String.format("DECIMAL (%s,%s)", precision, scale);
+      case MySql.ID, MsSql.ID -> String.format("DECIMAL (%s,%s)", precision, scale);
       case H2.ID -> "DOUBLE";
       default -> throw new UnsupportedOperationException(String.format("Unknown dialect '%s'", dialect.getId()));
     };

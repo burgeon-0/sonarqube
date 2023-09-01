@@ -24,11 +24,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import org.sonar.db.Database;
 import org.sonar.db.DatabaseUtils;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+import org.sonar.db.dialect.*;
 import org.sonar.server.platform.db.migration.def.Validations;
 
 public abstract class DropIndexChange extends DdlChange {
@@ -58,7 +54,7 @@ public abstract class DropIndexChange extends DdlChange {
 
   private String createDropIndexSqlStatement(Dialect dialect, String actualIndexName) {
     return switch (dialect.getId()) {
-      case MsSql.ID -> "DROP INDEX " + actualIndexName + " ON " + tableName;
+      case MsSql.ID, MySql.ID -> "DROP INDEX " + actualIndexName + " ON " + tableName;
       case Oracle.ID -> "DROP INDEX " + actualIndexName;
       case H2.ID, PostgreSql.ID -> "DROP INDEX IF EXISTS " + actualIndexName;
       default -> throw new IllegalStateException("Unsupported dialect for drop of index: " + dialect);

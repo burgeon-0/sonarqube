@@ -441,6 +441,9 @@
       <when test="_databaseId == 'mssql'">
         and p.uuid_path like #{viewUuidLikeQuery,jdbcType=VARCHAR} {escape '\'}
       </when>
+      <when test="_databaseId == 'mysql'">
+        p.module_uuid_path LIKE concat(module.module_uuid_path, '%')
+      </when>
       <otherwise>
         and p.uuid_path like #{viewUuidLikeQuery,jdbcType=VARCHAR} ESCAPE '\'
       </otherwise>

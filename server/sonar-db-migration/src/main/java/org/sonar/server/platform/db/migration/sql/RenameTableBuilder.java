@@ -20,11 +20,8 @@
 package org.sonar.server.platform.db.migration.sql;
 
 import java.util.List;
-import org.sonar.db.dialect.Dialect;
-import org.sonar.db.dialect.H2;
-import org.sonar.db.dialect.MsSql;
-import org.sonar.db.dialect.Oracle;
-import org.sonar.db.dialect.PostgreSql;
+
+import org.sonar.db.dialect.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
@@ -73,7 +70,7 @@ public class RenameTableBuilder {
 
   private List<String> createSqlStatement() {
     switch (dialect.getId()) {
-      case H2.ID, PostgreSql.ID:
+      case H2.ID, MySql.ID, PostgreSql.ID:
         return singletonList("ALTER TABLE " + name + " RENAME TO " + newName);
       case MsSql.ID:
         return singletonList("EXEC sp_rename '" + name + "', '" + newName + "'");

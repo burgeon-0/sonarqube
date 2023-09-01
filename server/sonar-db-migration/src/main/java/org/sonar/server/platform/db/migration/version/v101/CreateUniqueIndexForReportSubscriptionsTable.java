@@ -27,6 +27,8 @@ import org.sonar.db.DatabaseUtils;
 import org.sonar.server.platform.db.migration.sql.CreateIndexBuilder;
 import org.sonar.server.platform.db.migration.step.DdlChange;
 
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.UUID_SIZE;
+import static org.sonar.server.platform.db.migration.def.VarcharColumnDef.newVarcharColumnDefBuilder;
 import static org.sonar.server.platform.db.migration.version.v101.AddReportSubscriptionsTable.TABLE_NAME;
 
 
@@ -55,14 +57,14 @@ public class CreateUniqueIndexForReportSubscriptionsTable extends DdlChange{
     }
   }
 
-  private static void createUserUuidUniqueIndex(DdlChange.Context context, Connection connection) {
+  private void createUserUuidUniqueIndex(DdlChange.Context context, Connection connection) {
     if (!DatabaseUtils.indexExistsIgnoreCase(TABLE_NAME, INDEX_NAME, connection)) {
-      context.execute(new CreateIndexBuilder()
+      context.execute(new CreateIndexBuilder(getDialect())
         .setTable(TABLE_NAME)
         .setName(INDEX_NAME)
-        .addColumn(COLUMN_NAME_PORTFOLIO)
-        .addColumn(COLUMN_NAME_BRANCH)
-        .addColumn(COLUMN_NAME_USER)
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(COLUMN_NAME_PORTFOLIO).setLimit(UUID_SIZE).build())
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(COLUMN_NAME_BRANCH).setLimit(UUID_SIZE).build())
+        .addColumn(newVarcharColumnDefBuilder().setColumnName(COLUMN_NAME_USER).setLimit(UUID_SIZE).build())
         .setUnique(true)
         .build());
     }
